@@ -15,9 +15,11 @@ jobs:
 
       - name: Unpack Bike Radar project
         run: |
+          rm -rf project
+          mkdir project
           unzip -o Bike-Radar-LT-project.zip -d project
           echo "=== PROJECT CONTENTS ==="
-          find project -maxdepth 3 -type f | head -100
+          find project -maxdepth 4 -type f | head -100
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -29,8 +31,15 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build APK
-        working-directory: project
         run: |
+          GRADLEW=$(find project -type f -name gradlew | head -1)
+          if [ -z "$GRADLEW" ]; then
+            echo "ERROR: gradlew not found"
+            exit 1
+          fi
+          echo "Found Gradle wrapper: $GRADLEW"
+          DIR=$(dirname "$GRADLEW")
+          cd "$DIR"
           chmod +x gradlew
           ./gradlew assembleDebug
 
@@ -38,4 +47,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Bike-Radar-LT-APK
-          path: project/app/build/outputs/apk/debug/app-debug.apk
+          path: project/**/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
