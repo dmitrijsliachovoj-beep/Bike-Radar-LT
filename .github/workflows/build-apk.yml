@@ -17,7 +17,8 @@ jobs:
         run: |
           rm -rf project
           mkdir project
-          unzip -o Bike-Radar-LT-project-FIXED.zip -d project
+          
+          unzip -o BikeRadarAndroid_v0.2.zip -d project
 
       - name: Setup Java
         uses: actions/setup-java@v4
